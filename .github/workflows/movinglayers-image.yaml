@@ -1,0 +1,52 @@
+# MovingLayers fork: builds the patched Twenty image and pushes it to GHCR.
+# The upstream release tag the branch is based on lives in
+# .movinglayers/UPSTREAM_VERSION; bump it when rebasing onto a new release.
+name: MovingLayers image
+
+permissions:
+  contents: read
+  packages: write
+
+on:
+  push:
+    branches:
+      - 'movinglayers/**'
+  workflow_dispatch:
+
+defaults:
+  run:
+    shell: bash --noprofile --norc -euo pipefail {0}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compute tags
+        id: meta
+        run: |
+          version="$(cat .movinglayers/UPSTREAM_VERSION)"
+          echo "app_version=${version}" >> "$GITHUB_OUTPUT"
+          echo "tag=${version}-ml.${GITHUB_RUN_NUMBER}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: packages/twenty-docker/twenty/Dockerfile
+          target: twenty
+          platforms: linux/amd64
+          build-args: APP_VERSION=${{ steps.meta.outputs.app_version }}
+          push: true
+          tags: ghcr.io/movinglayers/twenty:${{ steps.meta.outputs.tag }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
