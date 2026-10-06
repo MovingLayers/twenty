@@ -1,11 +1,12 @@
-# MovingLayers fork: builds the patched Twenty image and pushes it to GHCR.
+# MovingLayers fork: builds the patched Twenty image and pushes it to Harbor.
+# Needs repo secrets HARBOR_USERNAME / HARBOR_PASSWORD (robot account with
+# push rights on project `twenty`).
 # The upstream release tag the branch is based on lives in
 # .movinglayers/UPSTREAM_VERSION; bump it when rebasing onto a new release.
 name: MovingLayers image
 
 permissions:
   contents: read
-  packages: write
 
 on:
   push:
@@ -35,9 +36,9 @@ jobs:
 
       - uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: harbor.movinglayers.eu
+          username: ${{ secrets.HARBOR_USERNAME }}
+          password: ${{ secrets.HARBOR_PASSWORD }}
 
       - uses: docker/build-push-action@v6
         with:
@@ -47,6 +48,6 @@ jobs:
           platforms: linux/amd64
           build-args: APP_VERSION=${{ steps.meta.outputs.app_version }}
           push: true
-          tags: ghcr.io/movinglayers/twenty:${{ steps.meta.outputs.tag }}
+          tags: harbor.movinglayers.eu/twenty/twenty:${{ steps.meta.outputs.tag }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
