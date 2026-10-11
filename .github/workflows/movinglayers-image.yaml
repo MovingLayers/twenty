@@ -1,6 +1,6 @@
 # MovingLayers fork: builds the patched Twenty image and pushes it to Harbor.
-# Needs repo secrets HARBOR_USERNAME / HARBOR_PASSWORD (robot account with
-# push rights on project `twenty`).
+# Uses the org secrets HARBOR_USERNAME / HARBOR_PASSWORD, like the other
+# MovingLayers repos. The robot needs push rights on Harbor project `twenty`.
 # The upstream release tag the branch is based on lives in
 # .movinglayers/UPSTREAM_VERSION; bump it when rebasing onto a new release.
 name: MovingLayers image
