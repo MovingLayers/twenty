@@ -43,9 +43,21 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
       clientID: twentyConfigService.get('AUTH_GOOGLE_CLIENT_ID'),
       clientSecret: twentyConfigService.get('AUTH_GOOGLE_CLIENT_SECRET'),
       callbackURL: twentyConfigService.get('AUTH_GOOGLE_CALLBACK_URL'),
-      scope: ['email', 'profile'],
+      // Unset means Google's own endpoints. Set, they point the flow at any
+      // OpenID Connect provider (e.g. Keycloak).
+      authorizationURL:
+        twentyConfigService.get('AUTH_GOOGLE_AUTHORIZATION_URL') || undefined,
+      tokenURL: twentyConfigService.get('AUTH_GOOGLE_TOKEN_URL') || undefined,
+      userProfileURL:
+        twentyConfigService.get('AUTH_GOOGLE_USERINFO_URL') || undefined,
+      // `openid` is required by providers such as Keycloak to serve userinfo.
+      scope: ['openid', 'email', 'profile'],
       passReqToCallback: true,
     });
+
+    // The library sends the token for userinfo as a query parameter, which
+    // Keycloak rejects. Google accepts the Authorization header as well.
+    this._oauth2.useAuthorizationHeaderforGET(true);
   }
 
   // oxlint-disable-next-line typescript/no-explicit-any

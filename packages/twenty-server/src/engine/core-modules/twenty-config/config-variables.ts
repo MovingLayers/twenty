@@ -195,6 +195,37 @@ export class ConfigVariables {
 
   @ConfigVariablesMetadata({
     group: ConfigVariablesGroup.GOOGLE_AUTH,
+    isSensitive: false,
+    description:
+      'Authorization endpoint override for Google sign-in. Set it with the token and userinfo URLs to sign in through any OpenID Connect provider (e.g. Keycloak) instead of Google',
+    type: ConfigVariableType.STRING,
+  })
+  @IsUrl({ require_tld: false, require_protocol: true })
+  @IsOptional()
+  AUTH_GOOGLE_AUTHORIZATION_URL: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.GOOGLE_AUTH,
+    isSensitive: false,
+    description: 'Token endpoint override for Google sign-in',
+    type: ConfigVariableType.STRING,
+  })
+  @IsUrl({ require_tld: false, require_protocol: true })
+  @IsOptional()
+  AUTH_GOOGLE_TOKEN_URL: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.GOOGLE_AUTH,
+    isSensitive: false,
+    description: 'OpenID Connect userinfo endpoint override for Google sign-in',
+    type: ConfigVariableType.STRING,
+  })
+  @IsUrl({ require_tld: false, require_protocol: true })
+  @IsOptional()
+  AUTH_GOOGLE_USERINFO_URL: string;
+
+  @ConfigVariablesMetadata({
+    group: ConfigVariablesGroup.GOOGLE_AUTH,
     description: 'Enable or disable the Gmail messaging integration',
     type: ConfigVariableType.BOOLEAN,
   })

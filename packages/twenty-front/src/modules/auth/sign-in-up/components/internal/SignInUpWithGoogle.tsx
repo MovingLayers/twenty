@@ -8,10 +8,9 @@ import {
 } from '@/auth/states/signInUpStepState';
 import { AuthenticatedMethod } from '@/auth/types/AuthenticatedMethod.enum';
 import { type SocialSsoSignInUpActionType } from '@/auth/types/SocialSsoSignInUpActionType';
-import { useLingui } from '@lingui/react/macro';
 import { memo } from 'react';
 import { MainButton } from 'twenty-ui/components';
-import { IconGoogle } from 'twenty-ui/icon';
+import { IconKey } from 'twenty-ui/icon';
 import { HorizontalSeparator } from 'twenty-ui/primitives/layout';
 import { useAtomState } from '@/ui/utilities/state/jotai/hooks/useAtomState';
 import { useAtomStateValue } from '@/ui/utilities/state/jotai/hooks/useAtomStateValue';
@@ -19,9 +18,14 @@ import { LastUsedPill } from './LastUsedPill';
 import { StyledSsoButtonContainer } from './SignInUpSsoButtonStyles';
 import { useTheme } from 'twenty-ui/theme';
 
+// MovingLayers fork: the Google flow is pointed at Keycloak through the
+// AUTH_GOOGLE_*_URL variables, so the button names our login, not Google.
+// oxlint-disable-next-line lingui/no-unlocalized-strings
+const SIGN_IN_BUTTON_LABEL = 'Login via MovingLayers';
+
 const GoogleIcon = memo(() => {
   const theme = useTheme();
-  return <IconGoogle size={theme.icon.size.md} />;
+  return <IconKey size={theme.icon.size.md} />;
 });
 
 export const SignInUpWithGoogle = ({
@@ -31,7 +35,6 @@ export const SignInUpWithGoogle = ({
   action: SocialSsoSignInUpActionType;
   isGlobalScope?: boolean;
 }) => {
-  const { t } = useLingui();
   const signInUpStep = useAtomStateValue(signInUpStepState);
   const [lastAuthenticatedMethod, setLastAuthenticatedMethod] = useAtomState(
     lastAuthenticatedMethodState,
@@ -54,7 +57,9 @@ export const SignInUpWithGoogle = ({
           onClick={handleClick}
           fullWidth
           variant={signInUpStep === SignInUpStep.Init ? 'solid' : 'outline'}
-        >{t`Continue with Google`}</MainButton>
+        >
+          {SIGN_IN_BUTTON_LABEL}
+        </MainButton>
         {isLastUsed && (isGlobalScope || hasMultipleAuthMethods) && (
           <LastUsedPill />
         )}
